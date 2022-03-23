@@ -1,2 +1,2 @@
 # BOTzero
- Bot de telegram pq sim
+ Escrever algo aqui logo.
