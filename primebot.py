@@ -32,120 +32,132 @@ class Evento:
 
 @bot.message_handler(commands=["role"])
 def vamomarcar(mensagem):
-    comando = mensagem.text.split()[1]
-    msg = mensagem
+    
+    try:
+        comando = mensagem.text.split()[1]
+        msg = mensagem
+        
+        #marca um evento
+        if(comando == "marcar"):
+            msg = msg.text.replace("/role marcar ", "")
+            nome, data, desc = msg.split(", ")
 
-    #marca um evento
-    if(comando == "marcar"):
-        msg = msg.text.replace("/role marcar ", "")
-        nome, data, desc = msg.split(", ")
+            listaRole = getListaRole()
+            n_roles = len(listaRole)
 
-        listaRole = getListaRole()
-        n_roles = len(listaRole)
-
-        if(n_roles == 0):
-            newrole = Evento(nome, data, desc)
-            listaRole.append(newrole)
-            setListaRole(listaRole)
-            bot.reply_to(mensagem, "rolê marcado!")
-        else:
-            verifyer = 0
-            for i in range(n_roles):
-                if (listaRole[i].nome == nome):
-                    bot.reply_to(mensagem, "rolê já existente! crie um outro rolê com outro nome, ou, se quiser,chame /role remarcar nomerolê")
-                    verifyer+=1
-                    break
-            if verifyer == 0:
+            if(n_roles == 0):
                 newrole = Evento(nome, data, desc)
                 listaRole.append(newrole)
                 setListaRole(listaRole)
                 bot.reply_to(mensagem, "rolê marcado!")
-        
-    #sobreescreve um evento
-    elif(comando == "remarcar"):
-        msg = msg.text.replace("/role remarcar ", "")
-        nome, data, desc = msg.split(", ")
-
-        listaRole = getListaRole()
-        n_roles = len(listaRole)
-
-        if(n_roles > 0):
-            for i in range(n_roles):
-                if (listaRole[i].nome == nome):
-
-                    listaRole[i].nome = nome
-                    listaRole[i].data = data
-                    listaRole[i].descricao = desc
+            else:
+                verifyer = 0
+                for i in range(n_roles):
+                    if (listaRole[i].nome == nome):
+                        bot.reply_to(mensagem, "rolê já existente! crie um outro rolê com outro nome, ou, se quiser,chame /role remarcar nomerolê")
+                        verifyer+=1
+                        break
+                if verifyer == 0:
+                    newrole = Evento(nome, data, desc)
+                    listaRole.append(newrole)
                     setListaRole(listaRole)
-                    bot.reply_to(mensagem, "rolê remarcado!")
+                    bot.reply_to(mensagem, "rolê marcado!")
+            
+        #sobreescreve um evento
+        elif(comando == "remarcar"):
+            msg = msg.text.replace("/role remarcar ", "")
+            nome, data, desc = msg.split(", ")
 
-        else:
-            bot.reply_to(mensagem, "rolê nem existe! cria ele ae meu")
+            listaRole = getListaRole()
+            n_roles = len(listaRole)
 
-    elif(comando == "desmarcar"):
-        nome = msg.text.replace("/role desmarcar ", "")
+            if(n_roles > 0):
+                for i in range(n_roles):
+                    if (listaRole[i].nome == nome):
 
-        listaRole = getListaRole()
-        n_roles = len(listaRole)
+                        listaRole[i].nome = nome
+                        listaRole[i].data = data
+                        listaRole[i].descricao = desc
+                        setListaRole(listaRole)
+                        bot.reply_to(mensagem, "rolê remarcado!")
 
-        verifyer = 0
-        for i in range(n_roles):
-            if (listaRole[i].nome == nome):
-                listaRole[i]
-                bot.reply_to(mensagem, "role desmarcado, os de vdd eu sei quem são, vlwflw")
-                verifyer+=1
-                break
-        if verifyer == 0:
-            bot.reply_to(mensagem, "não achei o role")
+            else:
+                bot.reply_to(mensagem, "rolê nem existe! cria ele ae meu")
 
-    #mostra eventos marcados
-    elif(comando == "consultar"):
-        listaRole = getListaRole()
-        n_roles = len(listaRole)
+        elif(comando == "desmarcar"):
+            nome = msg.text.replace("/role desmarcar ", "")
 
-        if(n_roles > 0):
-            str_roles = ""
-            for i in range(n_roles):
-                str_roles += "  \n"+listaRole[i].nome + "  " + listaRole[i].data
+            listaRole = getListaRole()
+            n_roles = len(listaRole)
 
-            bot.reply_to(mensagem, "roles marcados:\n"+str_roles)
-        else:
-            bot.reply_to(mensagem, "não existem rolês marcados")
-
-    #contagem regressiva para evento
-    elif(comando == "countdown"):
-        nome = msg.text.replace("/role countdown ", "")
-
-        listaRole = getListaRole()
-        n_roles = len(listaRole)
-
-        if(n_roles > 0):
+            verifyer = 0
+            nom =''
+            dat =''
+            desc =''
             for i in range(n_roles):
                 if (listaRole[i].nome == nome):
-                    format_string = "%d/%m/%Y %H:%M:%S"
-                    data = datetime.strptime(listaRole[i].data, format_string)
-                    bot.reply_to(mensagem, "It'll be in: "+str(data-datetime.now()))
+                    listaRole.remove(listaRole[i])
+                    setListaRole(listaRole)
+                    bot.reply_to(mensagem, "role desmarcado, os de vdd eu sei quem são")
+                    verifyer+=1
                     break
-        else:
-            bot.reply_to(mensagem, "não achei esse role")
+            if verifyer == 0:
+                bot.reply_to(mensagem, "não achei o role")
+
+        #mostra eventos marcados
+        elif(comando == "consultar"):
+            listaRole = getListaRole()
+            n_roles = len(listaRole)
+
+            if(n_roles > 0):
+                str_roles = ""
+                for i in range(n_roles):
+                    str_roles += "  \n"+listaRole[i].nome + "  " + listaRole[i].data
+
+                bot.reply_to(mensagem, "roles marcados:\n"+str_roles)
+            else:
+                bot.reply_to(mensagem, "não existem rolês marcados")
+
+        #contagem regressiva para evento
+        elif(comando == "countdown"):
+            nome = msg.text.replace("/role countdown ", "")
+
+            listaRole = getListaRole()
+            n_roles = len(listaRole)
+
+            if(n_roles > 0):
+                for i in range(n_roles):
+                    if (listaRole[i].nome == nome):
+                        format_string = "%d/%m/%Y %H:%M:%S"
+                        data = datetime.strptime(listaRole[i].data, format_string)
+                        bot.reply_to(mensagem, "It'll be in: "+str(data-datetime.now()))
+                        break
+            else:
+                bot.reply_to(mensagem, "não achei esse role")
     
+    except:
+        bot.reply_to(mensagem, "Os comandos da agenda são:\
+            \n/role marcar -> marca roles no formato 'nome, data hora, descrição'\
+            \n/role remarcar -> sobreescreve um role marcado(mesmo formato)\
+            \n/role desmarcar -> desmarca um role pelo nome dele\
+            \n/role consultar -> mostra nome e data dos roles\
+            \n/role countdown -> quanto tempo flata pro role")     
+
+    def getListaRole():
+        if(exists("listaRoles")):
+            with open("listaRoles", "rb") as arquivo:
+                listaRolePickled = arquivo.read()
+            listaRole = pickle.loads(listaRolePickled)
+        else:
+            listaRole = []
+
+        return listaRole
 
 
-def getListaRole():
-    if(exists("listaRoles")):
-        with open("listaRoles", "rb") as arquivo:
-            listaRolePickled = arquivo.read()
-        listaRole = pickle.loads(listaRolePickled)
-    else:
-        listaRole = []
-
-    return listaRole
-
-
-def setListaRole(listaRole):
-    listaRolePickled = pickle.dumps(listaRole)
-    with open("listaRoles", "wb+") as arquivo:
-        arquivo.write(listaRolePickled)
+    def setListaRole(listaRole):
+        listaRolePickled = pickle.dumps(listaRole)
+        with open("listaRoles", "wb+") as arquivo:
+            arquivo.write(listaRolePickled)
 
 
 @bot.message_handler(commands=["ximira"])
@@ -158,10 +170,10 @@ def responder(mensagem):
 
 # listar todos os comandos aqui:
 @bot.message_handler(commands=["help", "ajuda", "socorro"])
-def ajudar(mensagem):
+def guiadecomandos(mensagem):
     bot.send_message(mensagem.chat.id, "Olá, eu sou o bot e esses são meus comandos:\n \
         /roll → /roll 1d20 = joga um dado de vinte lados \
-        /role →\
+        /role → abre o guia de comando da agenda\
         ")
 
 # comando de jogar dados:
@@ -194,8 +206,6 @@ def ojogo(mensagem):
     bot.reply_to(mensagem, "perdi")
 
 # 20% de chance de falar que o gp é gay ->piada interna do grupo<-
-
-
 @bot.message_handler(regexp="gay")
 def gpfullhomo(mensagem):
     x = random.randint(1, 10)
@@ -205,8 +215,6 @@ def gpfullhomo(mensagem):
         pass
 
 # 50% de chance de reclamar do danilo falando da multiplique ->piada interna do grupo<-
-
-
 @bot.message_handler(regexp="Multi")
 def antidanilo(mensagem):
     x = random.randint(1, 10)
@@ -220,8 +228,6 @@ def antidanilo(mensagem):
         pass
 
 # fala que dia da semana é
-
-
 @bot.message_handler(regexp="semaninha filha da puta")
 def semaninha(mensagem):
     date = datetime.now()
