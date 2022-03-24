@@ -14,6 +14,47 @@ bot = telebot.TeleBot(APIkey)
 # ------------------------------------------------------------------
 # testes:
 
+
+@bot.message_handler(regexp="testa ai")
+def ojogo(mensagem):
+    bot.reply_to(mensagem, "foi")
+
+
+@bot.message_handler(commands=["ximira"])
+def responder(mensagem):
+    bot.send_photo(mensagem.chat.id, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrm4r4Ow5mWUdGRPkMr-Sht1pknZ2ACCFwt8Mh7-hx0CULjSfFYxmkml5lpuzpk9o7nVg&usqp=CAU')
+
+
+# ------------------------------------------------------------------
+# comandos:
+
+# listar todos os comandos aqui:
+@bot.message_handler(commands=["help", "ajuda", "socorro"])
+def guiadecomandos(mensagem):
+    bot.send_message(mensagem.chat.id, "Olá, eu sou o bot e esses são meus comandos:\n \
+        /roll → /roll 1d20 = joga um dado de vinte lados \
+        /role → abre o guia de comando da agenda\
+        ")
+
+
+# comando de jogar dados:
+@bot.message_handler(commands=["roll"])
+def joga_dados(mensagem):
+    a, dados = mensagem.text.split(' ')
+    quantdados, dado = dados.split('d')
+    if int(quantdados) > 42:
+        bot.reply_to(mensagem, "NÃO FODE")
+    elif int(dado) > 100:
+        bot.reply_to(mensagem, "Ta tentando compensar o que?")
+    else:
+        j = 0
+        corda = "dados: "
+        for x in range(int(quantdados)):
+            a = (random.randint(1, (int(dado))))
+            j += a
+            corda += str(a)+' '
+        bot.reply_to(mensagem, corda+"\n"+"Total: "+str(j))
+
 # roles
 
 # Exemplos
@@ -22,13 +63,6 @@ bot = telebot.TeleBot(APIkey)
 # /role desmarcar ficar doidão na uni
 # /role consultar
 # /role falta_quanto ficar doidão na uni
-
-class Evento:
-    def __init__(self, nome, data, descricao):
-        self.nome = nome
-        self.data = data
-        self.descricao = descricao
-
 
 @bot.message_handler(commands=["role"])
 def vamomarcar(mensagem):
@@ -44,7 +78,7 @@ def vamomarcar(mensagem):
 
             listaRole = getListaRole()
             n_roles = len(listaRole)
-
+            
             if(n_roles == 0):
                 newrole = Evento(nome, data, desc)
                 listaRole.append(newrole)
@@ -84,6 +118,7 @@ def vamomarcar(mensagem):
             else:
                 bot.reply_to(mensagem, "rolê nem existe! cria ele ae meu")
 
+        #apaga um eveto
         elif(comando == "desmarcar"):
             nome = msg.text.replace("/role desmarcar ", "")
 
@@ -136,14 +171,15 @@ def vamomarcar(mensagem):
                 bot.reply_to(mensagem, "não achei esse role")
     
     except:
-        bot.reply_to(mensagem, "Os comandos da agenda são:\
-            \n/role marcar -> marca roles no formato 'nome, data hora, descrição'\
+        bot.reply_to(mensagem, "Os comandos da agenda são:\n \
+            \n/role marcar -> marca roles no formato '/role marcar nome do role, dd/mm/aaaa hh:mm:ss, descrição'\
             \n/role remarcar -> sobreescreve um role marcado(mesmo formato)\
-            \n/role desmarcar -> desmarca um role pelo nome dele\
-            \n/role consultar -> mostra nome e data dos roles\
-            \n/role countdown -> quanto tempo flata pro role")     
+            \n/role desmarcar -> desmarca um role pelo nome dele '/role desmarcar nome do role'\
+            \n/role consultar -> mostra nome e data dos roles '/role consultar nome do role'\
+            \n/role countdown -> quanto tempo flata pro role'/role countdown nome do role'")     
 
-    def getListaRole():
+#funçoes e classes auxiliares para eventos
+def getListaRole():
         if(exists("listaRoles")):
             with open("listaRoles", "rb") as arquivo:
                 listaRolePickled = arquivo.read()
@@ -154,56 +190,44 @@ def vamomarcar(mensagem):
         return listaRole
 
 
-    def setListaRole(listaRole):
+def setListaRole(listaRole):
         listaRolePickled = pickle.dumps(listaRole)
         with open("listaRoles", "wb+") as arquivo:
             arquivo.write(listaRolePickled)
-
-
-@bot.message_handler(commands=["ximira"])
-def responder(mensagem):
-    bot.send_photo(mensagem.chat.id, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrm4r4Ow5mWUdGRPkMr-Sht1pknZ2ACCFwt8Mh7-hx0CULjSfFYxmkml5lpuzpk9o7nVg&usqp=CAU')
-
-
-# ------------------------------------------------------------------
-# comandos:
-
-# listar todos os comandos aqui:
-@bot.message_handler(commands=["help", "ajuda", "socorro"])
-def guiadecomandos(mensagem):
-    bot.send_message(mensagem.chat.id, "Olá, eu sou o bot e esses são meus comandos:\n \
-        /roll → /roll 1d20 = joga um dado de vinte lados \
-        /role → abre o guia de comando da agenda\
-        ")
-
-# comando de jogar dados:
-
-
-@bot.message_handler(commands=["roll"])
-def joga_dados(mensagem):
-    a, dados = mensagem.text.split(' ')
-    quantdados, dado = dados.split('d')
-    if int(quantdados) > 42:
-        bot.reply_to(mensagem, "NÃO FODE")
-    elif int(dado) > 100:
-        bot.reply_to(mensagem, "Ta tentando compensar o que?")
-    else:
-        j = 0
-        corda = "dados: "
-        for x in range(int(quantdados)):
-            a = (random.randint(1, (int(dado))))
-            j += a
-            corda += str(a)+' '
-        bot.reply_to(mensagem, corda+"\n"+"Total: "+str(j))
+            
+class Evento:
+    def __init__(self, nome, data, descricao):
+        self.nome = nome
+        self.data = data
+        self.descricao = descricao
 
 
 # ------------------------------------------------------------------
 # Reações passivas a coisas:
 
 # sempre que alguem escreve 'o jogo' responde com um 'perdi':
-@bot.message_handler(regexp="o jogo")
+@bot.message_handler(regexp="jogo")
 def ojogo(mensagem):
-    bot.reply_to(mensagem, "perdi")
+    x = random.randint(1, 10)
+    if x == 1:
+        bot.reply_to(mensagem, "a rainha ainda não perdeu?")
+    elif x < 4:
+        bot.reply_to(mensagem, "perdi")
+    elif x == 5:
+        bot.reply_to(mensagem, "O JOGO?")
+    else:
+        pass
+    
+@bot.message_handler(regexp="perdi")
+def perdiojogo(mensagem):
+    x = random.randint(1, 10)
+    if x < 2:
+        bot.reply_to(mensagem, "perdi")
+    elif x == 7:
+        bot.reply_to(mensagem, "porra de jogo do caralho, perdi")
+    else:
+        pass
+
 
 # 20% de chance de falar que o gp é gay ->piada interna do grupo<-
 @bot.message_handler(regexp="gay")
@@ -227,7 +251,7 @@ def antidanilo(mensagem):
     else:
         pass
 
-# fala que dia da semana é
+# fala que dia da semana é de segunda a quinta
 @bot.message_handler(regexp="semaninha filha da puta")
 def semaninha(mensagem):
     date = datetime.now()
@@ -244,6 +268,150 @@ def semaninha(mensagem):
         bot.reply_to(mensagem, "capitão, ainda é "+dia)
     else:
         pass
+
+
+#respostasa quem fala mal do bot
+@bot.message_handler(regexp="bot lixo")
+def reference(mensagem):
+    name = mensagem.from_user.username
+    bot.reply_to(mensagem, '/votekick '+str(name))
+    
+@bot.message_handler(regexp="vai tomar no cu bot")
+def reference(mensagem):
+    name = mensagem.from_user.username
+    bot.reply_to(mensagem, '/votekick '+str(name))
+    
+@bot.message_handler(regexp="vai se fuder bot")
+def reference(mensagem):
+    name = mensagem.from_user.username
+    bot.reply_to(mensagem, '/votekick '+str(name))
+
+@bot.message_handler(regexp="me mama bot")
+def reference(mensagem):
+    name = mensagem.from_user.username
+    bot.reply_to(mensagem, '/votekick '+str(name))
+    
+@bot.message_handler(regexp="bot viad")
+def reference(mensagem):
+    name = mensagem.from_user.first_name
+    bot.reply_to(mensagem, 'viado é ofença agora, #Cancelem'+str(name)+' #PorUmMundoMelhor')
+
+@bot.message_handler(regexp="bot de merda")
+def reference(mensagem):
+    name = mensagem.from_user.username
+    bot.reply_to(mensagem, '/votekick '+str(name))
+    
+@bot.message_handler(regexp="bot filho da puta")
+def reference(mensagem):
+    name = mensagem.from_user.last_name
+    bot.reply_to(mensagem, 'engraçado que a Sra. '+str(name)+ " disse ontem algo bem parecido na cama, e sobre voce haha")
+
+@bot.message_handler(regexp="bot burro")
+def reference(mensagem):
+    name = mensagem.from_user.username
+    bot.reply_to(mensagem, '/votekick '+str(name))
+
+@bot.message_handler(regexp="/votekick bot")
+def reference(mensagem):
+    name = mensagem.from_user.username
+    bot.reply_to(mensagem, '/ban '+str(name))
+
+@bot.message_handler(regexp="/ban bot")
+def reference(mensagem):
+    bot.reply_to(mensagem, 'só argumenta quem não se garante no soco, change my mind')
+
+
+
+#------------------------------------------------------------------------------------
+#Referencias...
+
+#alabama reference
+@bot.message_handler(regexp="incesto")
+def sweethome(mensagem):
+    bot.send_photo(mensagem.chat.id, 'https://img.ifunny.co/images/1c31b0bfe979a8615bb903fdcf1943499fa836c1c47faf8b818aaaf968cb5932_1.jpg')
+    
+#reference reference
+@bot.message_handler(regexp="motherfucking reference")
+def reference(mensagem):
+    bot.send_photo(mensagem.chat.id, 'https://img.ifunny.co/images/452cb7491692efa70102f59d186594a1d7e3c7264cc3047c14d01e686af8b487_1.jpg')
+   
+#reference reference
+@bot.message_handler(regexp="motherfucking reference")
+def reference(mensagem):
+    bot.send_photo(mensagem.chat.id, 'https://img.ifunny.co/images/452cb7491692efa70102f59d186594a1d7e3c7264cc3047c14d01e686af8b487_1.jpg')
+
+#deftpunk reference
+@bot.message_handler(regexp="Discovery")
+def reference(mensagem):
+    bot.send_photo(mensagem.chat.id, 'https://i.kym-cdn.com/photos/images/newsfeed/001/446/714/e68.jpg')
+    
+#deftpunk reference
+@bot.message_handler(regexp="Random Access Memories")
+def reference(mensagem):
+    bot.send_photo(mensagem.chat.id, 'https://i.kym-cdn.com/photos/images/newsfeed/001/446/714/e68.jpg')
+    
+#deftpunk reference
+@bot.message_handler(regexp="Homework")
+def reference(mensagem):
+    bot.send_photo(mensagem.chat.id, 'https://i.kym-cdn.com/photos/images/newsfeed/001/446/714/e68.jpg')
+    
+#brasil reference
+@bot.message_handler(regexp="Brasil")
+def reference(mensagem):
+    bot.send_photo(mensagem.chat.id, 'https://i.kym-cdn.com/photos/images/facebook/001/297/911/594.jpg')
+
+#brasil reference
+@bot.message_handler(regexp="inferno de lugar")
+def reference(mensagem):
+    bot.send_photo(mensagem.chat.id, 'https://i.kym-cdn.com/photos/images/facebook/001/297/911/594.jpg')
+    
+#brasil reference
+@bot.message_handler(regexp="caipirinha")
+def reference(mensagem):
+    bot.send_photo(mensagem.chat.id, 'https://i.kym-cdn.com/photos/images/facebook/001/297/911/594.jpg')
+    
+#brasil reference
+@bot.message_handler(regexp="carnaval")
+def reference(mensagem):
+    bot.send_photo(mensagem.chat.id, 'https://i.kym-cdn.com/photos/images/facebook/001/297/911/594.jpg')
+    
+#sexo reference
+@bot.message_handler(regexp="sexo")
+def reference(mensagem):
+    bot.send_photo(mensagem.chat.id, 'https://pbs.twimg.com/media/ESDYelRXsAg8keJ.jpg')
+    
+#sexo reference
+@bot.message_handler(regexp="transar")
+def reference(mensagem):
+    bot.send_photo(mensagem.chat.id, 'https://pbs.twimg.com/media/ESDYelRXsAg8keJ.jpg')
+    
+#sexo reference
+@bot.message_handler(regexp="fornica")
+def reference(mensagem):
+    bot.send_photo(mensagem.chat.id, 'https://pbs.twimg.com/media/ESDYelRXsAg8keJ.jpg')
+    
+#DO NADA reference
+@bot.message_handler(regexp="0")
+def reference(mensagem):
+    x = random.randint(1, 100)
+    if x == 42:
+        bot.send_photo(mensagem.chat.id, 'https://i.kym-cdn.com/photos/images/facebook/001/228/805/6a9.jpg')
+
+#aa reference
+#@bot.message_handler(regexp="asojfbas´jdhnçl")
+#def reference(mensagem):
+#    bot.send_photo(mensagem.chat.id, 'a')
+    
+#aaa reference
+#@bot.message_handler(regexp="alsjdhóajsdh")
+#def reference(mensagem):
+#    bot.send_photo(mensagem.chat.id, 'a')
+    
+#aaa reference
+#@bot.message_handler(regexp="ápsihfápsiohfóih")
+#def reference(mensagem):
+#    bot.send_photo(mensagem.chat.id, 'a')
+
 
 
 bot.polling()
