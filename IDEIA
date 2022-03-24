@@ -1,0 +1,9 @@
+import os #импортируем модуль "os"
+
+@bot.message_handler(commands=["restart"]) #вызов по команде /restart; можно сделать и на кнопку
+def restart(message):
+	pid = str(os.getpid()) #получаем ProcessID запущенного бота
+	restarter = open('restarter.bat', 'w') #открываем/создаем батник
+	restarter.write('Taskkill /PID ' + pid + ' /F\nTIMEOUT /T 5 /NOBREAK\ncd C:\\Users\\smp\\Desktop\\SMP\\\nsmp.py') #записываем скрипт в батник		
+	restarter.close() #закрываем отредактированный батник
+	os.system('C:/Users/smp/Desktop/SMP/restarter.bat') #запускаем наш батник

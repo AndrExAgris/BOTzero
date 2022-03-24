@@ -20,10 +20,6 @@ def ojogo(mensagem):
     bot.reply_to(mensagem, "foi")
 
 
-@bot.message_handler(commands=["ximira"])
-def responder(mensagem):
-    bot.send_photo(mensagem.chat.id, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrm4r4Ow5mWUdGRPkMr-Sht1pknZ2ACCFwt8Mh7-hx0CULjSfFYxmkml5lpuzpk9o7nVg&usqp=CAU')
-
 
 # ------------------------------------------------------------------
 # comandos:
@@ -32,31 +28,34 @@ def responder(mensagem):
 @bot.message_handler(commands=["help", "ajuda", "socorro"])
 def guiadecomandos(mensagem):
     bot.send_message(mensagem.chat.id, "Olá, eu sou o bot e esses são meus comandos:\n \
-        /roll → /roll 1d20 = joga um dado de vinte lados \
-        /role → abre o guia de comando da agenda\
+        \n/roll → /roll 1d20 = joga um dado de vinte lados \
+        \n/role → abre o guia de comando da agenda\
         ")
 
 
 # comando de jogar dados:
 @bot.message_handler(commands=["roll"])
 def joga_dados(mensagem):
-    a, dados = mensagem.text.split(' ')
-    quantdados, dado = dados.split('d')
-    if int(quantdados) > 42:
-        bot.reply_to(mensagem, "NÃO FODE")
-    elif int(dado) > 100:
-        bot.reply_to(mensagem, "Ta tentando compensar o que?")
-    else:
-        j = 0
-        corda = "dados: "
-        for x in range(int(quantdados)):
-            a = (random.randint(1, (int(dado))))
-            j += a
-            corda += str(a)+' '
-        bot.reply_to(mensagem, corda+"\n"+"Total: "+str(j))
+    try:
+        a, dados = mensagem.text.split(' ')
+        quantdados, dado = dados.split('d')
+        if int(quantdados) > 42:
+            bot.reply_to(mensagem, "NÃO FODE")
+        elif int(dado) > 100:
+            bot.reply_to(mensagem, "Ta tentando compensar o que?")
+        else:
+            j = 0
+            corda = "dados: "
+            for x in range(int(quantdados)):
+                a = (random.randint(1, (int(dado))))
+                j += a
+                corda += str(a)+' '
+            bot.reply_to(mensagem, corda+"\n"+"Total: "+str(j))
+    except:
+        bot.reply_to(mensagem, "Tenta digitar algo como '/roll 2d10'")
 
-# roles
 
+# Agenda de eventos
 # Exemplos
 # /role marcar ficar doidão na uni, 25/03/2022 22:00, trazer mt birita e droga
 # /role remarcar ficar doidão na uni, 26/03/2022 22:00, trazer ainda mais birita e droga
@@ -192,7 +191,7 @@ def getListaRole():
 
 def setListaRole(listaRole):
         listaRolePickled = pickle.dumps(listaRole)
-        with open("listaRoles", "wb+") as arquivo:
+        with open("listaEventos", "wb+") as arquivo:
             arquivo.write(listaRolePickled)
             
 class Evento:
@@ -294,7 +293,7 @@ def reference(mensagem):
 @bot.message_handler(regexp="bot viad")
 def reference(mensagem):
     name = mensagem.from_user.first_name
-    bot.reply_to(mensagem, 'viado é ofença agora, #Cancelem'+str(name)+' #PorUmMundoMelhor')
+    bot.reply_to(mensagem, 'Chamar alguem de viado é ofença agora?\n #Cancelem'+str(name)+' #PorUmMundoMelhor')
 
 @bot.message_handler(regexp="bot de merda")
 def reference(mensagem):
@@ -306,7 +305,7 @@ def reference(mensagem):
     name = mensagem.from_user.last_name
     bot.reply_to(mensagem, 'engraçado que a Sra. '+str(name)+ " disse ontem algo bem parecido na cama, e sobre voce haha")
 
-@bot.message_handler(regexp="bot burro")
+@bot.message_handler(regexp="bot burr")
 def reference(mensagem):
     name = mensagem.from_user.username
     bot.reply_to(mensagem, '/votekick '+str(name))
@@ -375,6 +374,11 @@ def reference(mensagem):
 def reference(mensagem):
     bot.send_photo(mensagem.chat.id, 'https://i.kym-cdn.com/photos/images/facebook/001/297/911/594.jpg')
     
+#brasil reference
+@bot.message_handler(regexp="feijoada")
+def reference(mensagem):
+    bot.send_photo(mensagem.chat.id, 'https://i.kym-cdn.com/photos/images/facebook/001/297/911/594.jpg')
+    
 #sexo reference
 @bot.message_handler(regexp="sexo")
 def reference(mensagem):
@@ -414,4 +418,7 @@ def reference(mensagem):
 
 
 
-bot.polling()
+#bot.polling()
+bot.infinity_polling(timeout=10, long_polling_timeout = 5)
+
+    
