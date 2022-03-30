@@ -179,8 +179,8 @@ def vamomarcar(mensagem):
 
 #funçoes e classes auxiliares para eventos
 def getListaRole():
-        if(exists("listaRoles")):
-            with open("listaRoles", "rb") as arquivo:
+        if(exists("listaEventos")):
+            with open("listaEventos", "rb") as arquivo:
                 listaRolePickled = arquivo.read()
             listaRole = pickle.loads(listaRolePickled)
         else:
@@ -188,12 +188,11 @@ def getListaRole():
 
         return listaRole
 
-
 def setListaRole(listaRole):
         listaRolePickled = pickle.dumps(listaRole)
         with open("listaEventos", "wb+") as arquivo:
             arquivo.write(listaRolePickled)
-            
+      
 class Evento:
     def __init__(self, nome, data, descricao):
         self.nome = nome
@@ -209,7 +208,7 @@ class Evento:
 def ojogo(mensagem):
     x = random.randint(1, 10)
     if x == 1:
-        bot.reply_to(mensagem, "a rainha ainda não perdeu?")
+        bot.reply_to(mensagem, "a rainha ainda não sabe desse jogo?")
     elif x < 4:
         bot.reply_to(mensagem, "perdi")
     elif x == 5:
@@ -271,6 +270,26 @@ def semaninha(mensagem):
 
 #respostasa quem fala mal do bot
 @bot.message_handler(regexp="bot lixo")
+def votekik(mensagem):
+    name = mensagem.from_user.username
+    bot.reply_to(mensagem, '/votekick '+str(name))
+
+@bot.message_handler(regexp="bot cuzão")
+def reference(mensagem):
+    name = mensagem.from_user.username
+    bot.reply_to(mensagem, '/votekick '+str(name))
+    
+@bot.message_handler(regexp="bot arrombado")
+def reference(mensagem):
+    name = mensagem.from_user.username
+    bot.reply_to(mensagem, '/votekick '+str(name))
+    
+@bot.message_handler(regexp="bot pau no cu")
+def reference(mensagem):
+    name = mensagem.from_user.username
+    bot.reply_to(mensagem, '/votekick '+str(name))
+    
+@bot.message_handler(regexp="bot escroto")
 def reference(mensagem):
     name = mensagem.from_user.username
     bot.reply_to(mensagem, '/votekick '+str(name))
