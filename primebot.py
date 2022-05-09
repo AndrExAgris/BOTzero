@@ -14,8 +14,7 @@ bot = telebot.TeleBot(APIkey)
 # ------------------------------------------------------------------
 # testes:
 
-
-@bot.message_handler(regexp="testa ai")
+@bot.message_handler(regexp="testa 1")
 def ojogo(mensagem):
     bot.reply_to(mensagem, "foi")
 
@@ -149,6 +148,7 @@ def vamomarcar(mensagem):
                     str_roles += "  \n"+listaRole[i].nome + "  " + listaRole[i].data
 
                 bot.reply_to(mensagem, "roles marcados:\n"+str_roles)
+                
             else:
                 bot.reply_to(mensagem, "não existem rolês marcados")
 
